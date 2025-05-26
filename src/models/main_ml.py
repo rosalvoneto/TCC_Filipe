@@ -45,7 +45,6 @@ def train_ml(training_metrics_dir, testing_metrics_dir, test_predictions_dir, pr
     if args.cross_validate:
         model.diagnose()
     model.test()
-    #model.shap_analyses()
     model.save_results()
 
 

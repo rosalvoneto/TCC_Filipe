@@ -12,7 +12,11 @@ class PyTorchMLPRegressor(BaseEstimator, RegressorMixin):
         self.lr = lr
         self.batch_size = batch_size
         self.verbose = verbose
+        print(f"CUDA disponível: {torch.cuda.is_available()}")
+        print(f"Quantidade de GPUs: {torch.cuda.device_count()}")
+        print(f"Nome da GPU: {torch.cuda.get_device_name(0)}")
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        print(f"Using device: {self.device}")
         self.model = self._build_model().to(self.device)
         self.criterion = nn.MSELoss()
         self.optimizer = optim.Adam(self.model.parameters(), lr=self.lr)
@@ -26,21 +30,17 @@ class PyTorchMLPRegressor(BaseEstimator, RegressorMixin):
             layers.append(nn.Linear(self.hidden_dims[i-1], self.hidden_dims[i]))
             layers.append(nn.ReLU())
         
-        layers.append(nn.Linear(self.hidden_dims[-1], 1))  # Saída única para regressão
+        layers.append(nn.Linear(self.hidden_dims[-1], 1))  
         return nn.Sequential(*layers)
 
     def fit(self, X, y):
-        # Verifica e converte os dados
-        print(f"Shape dos dados de entrada (X): {X.shape}")  # Debug crucial!
         X, y = check_X_y(X, y)
         X = torch.FloatTensor(X).to(self.device)
         y = torch.FloatTensor(y).reshape(-1, 1).to(self.device)
         
-        # DataLoader para batches
         dataset = torch.utils.data.TensorDataset(X, y)
         dataloader = torch.utils.data.DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
         
-        # Loop de treinamento
         self.model.train()
         for epoch in range(self.epochs):
             for batch_X, batch_y in dataloader:

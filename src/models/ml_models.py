@@ -97,17 +97,17 @@ class OtherModels:
             pickle.dump((rg, descriptor_dict), file)
         logger.info(f"Training is Done! {self.identifier}")
 
-        sample_size = 5000
+        #sample_size = 5000
         #if len(pd.read_csv(self.data_csv)) > 4500000:
         #    sample_size = 100000
 
-        shap_test_size = sample_size * 0.8
-        data_df = pd.read_csv(self.data_csv).sample(sample_size)
-        self.train_for_shap_analyses, self.test_for_shap_analyses = train_test_split(data_df, test_size=0.2,
-                                                                                     random_state=42)
-        train_smiles = [list(compute_descriptors(Chem.MolFromSmiles(smile)).values()) for smile in
-                        self.train_for_shap_analyses['smile']]
-        train_docking_scores = self.train_for_shap_analyses['docking_score'].tolist()
+        #shap_test_size = sample_size * 0.8
+        #data_df = pd.read_csv(self.data_csv).sample(sample_size)
+        #self.train_for_shap_analyses, self.test_for_shap_analyses = train_test_split(data_df, test_size=0.2,
+          #                                                                           random_state=42)
+        #train_smiles = [list(compute_descriptors(Chem.MolFromSmiles(smile)).values()) for smile in
+                       # self.train_for_shap_analyses['smile']]
+        #train_docking_scores = self.train_for_shap_analyses['docking_score'].tolist()
         #normalized_descriptors = self.scaler.fit_transform(train_smiles)
         #self.model_for_shap_analyses.fit(normalized_descriptors, train_docking_scores)
 

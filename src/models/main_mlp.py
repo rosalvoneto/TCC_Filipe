@@ -3,7 +3,6 @@ import os
 import time
 
 import numpy as np
-from sklearn.neural_network import MLPRegressor  # 🚀 Adicionamos a MLP
 from mlp_model import PyTorchMLPRegressor
 from sklearn.tree import DecisionTreeRegressor
 from xgboost import XGBRegressor
@@ -53,7 +52,6 @@ def train_ml(training_metrics_dir, testing_metrics_dir, test_predictions_dir, pr
     if args.cross_validate:
         model.diagnose()
     model.test()
-    #model.shap_analyses()
     model.save_results()
 
 if __name__ == '__main__':
@@ -66,12 +64,7 @@ if __name__ == '__main__':
     parser.add_argument("--cross_validate", type=str2bool, help="If to use 5 cross validation")
     args = parser.parse_args()
 
-    # 🔥 Adicionamos a MLP ao dicionário de modelos
     regressors_dict_ml_models = {
-        'decision_tree': DecisionTreeRegressor,
-        'xgboost': XGBRegressor,
-        'sgdreg': SGDRegressor,
-        #'mlp': lambda: MLPRegressor(hidden_layer_sizes=(100, 50), activation='relu', solver='adam', max_iter=500)
         'mlp': lambda: PyTorchMLPRegressor(
             input_dim=4691,
             hidden_dims=[100, 50],

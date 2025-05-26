@@ -63,23 +63,11 @@ def train_models(args, target, descriptor_data, size):
     data_all = pd.read_csv(path_to_csv_file).dropna()
     data_all.to_csv(identifier_data, index=False)
     
-    # Fiz essa alteração aqui...
-    #train_size = size
-    #val_size = len(data_all) * 0.1 if args.cross_validate else 0
-    #test_size = len(data_all) - (train_size + val_size)
-    
-    
-    #O correto é esses três de baixo
     train_size = size
     val_size = size * (number_of_folds-1) if args.cross_validate else 0
     test_size = len(data_all) - (train_size + val_size)
     
-    '''
-    total_size = len(data_all)
-    train_size = int(0.7 * total_size)
-    val_size = int(0.1 * total_size) if args.cross_validate else 0
-    test_size = total_size - (train_size + val_size)
-    '''
+    
     model = SwiftDock(
         training_metrics_dir, testing_metrics_dir, test_predictions_dir,
         project_info_dir, data_all, train_size, test_size, val_size, identifier,
@@ -88,12 +76,10 @@ def train_models(args, target, descriptor_data, size):
 
     model.split_data(cross_validate=args.cross_validate)
     model.train()
-    #model.shap_analyses()
 
     if args.cross_validate:
         model.diagnose()
     model.test()
-    #model.shap_analyses()
     model.save_results()
 
 if __name__ == '__main__':

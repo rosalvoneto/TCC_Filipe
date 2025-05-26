@@ -21,9 +21,11 @@ mpl.rcParams['figure.dpi'] = 300
 
 warnings.filterwarnings("ignore")
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def test_model(test_dataloader, net):
     smiles_prediction = []
+    net.eval()
     with torch.no_grad():
         for i, data in enumerate(test_dataloader):
             features, _ = data
@@ -62,23 +64,7 @@ def create_fold_predictions_and_target_df(fold_predictions, smiles_target, numbe
     predictions_and_target_df = pd.DataFrame(all_predictions, columns=columns)
     return predictions_and_target_df
 
-"""
-def create_test_metrics(fold_predictions, smiles_target, number_of_folds):
-    metrics_dict_test = {"test_mse": [], "test_mae": [], "test_rsquared": []}
 
-    for i in range(number_of_folds):
-        mse, mae, rsquared = calculate_metrics(fold_predictions[i], smiles_target)
-        metrics_dict_test["test_mse"].append(mse)
-        metrics_dict_test["test_mae"].append(mae)
-        metrics_dict_test["test_rsquared"].append(rsquared * 100)
-
-    
-    print("Métricas de teste por fold:", metrics_dict_test)  # Debugging para ver se está salvando corretamente
-
-    return metrics_dict_test
-
-"""
-#Anterior que funciona
 def create_test_metrics(fold_predictions, smiles_target, number_of_folds):
     all_folds_mse = 0
     all_folds_mae = 0
@@ -120,7 +106,6 @@ def get_data_splits(data, training_count, testing_count, validation_count):
     total_data = data.shape[0]
     assert training_count + testing_count + validation_count == total_data, "The counts must sum up to the total number of data points"
     x_temp, x_test, y_temp, y_test = train_test_split(x, y, test_size=testing_count, random_state=42)
-    # Adjust training size to account for initial split
     adjusted_train_count = training_count / (1 - (testing_count / total_data))
     x_train, x_val, y_train, y_val = train_test_split(x_temp, y_temp, train_size=int(adjusted_train_count),
                                                       random_state=42)
@@ -200,20 +185,15 @@ def calculate_tanimoto_distance(smile1, smile2):
 
 
 def morgan_fingerprints_mac_and_one_hot_bitvect(smile):
-    # Get the Morgan fingerprint
     m1 = Chem.MolFromSmiles(smile)
     fingerprint = AllChem.GetMorganFingerprintAsBitVect(m1, 1, nBits=1024).ToBitString()
 
-    # Get the one-hot encoding
     one_hot = one_hot_encode(smile).astype(int).tolist()
 
-    # Get the MACCS keys
     mac_keys = mac_keys_fingerprints(smile).astype(int).tolist()
 
-    # Combine them in the order: fingerprint, one-hot, MACCS
     combined = fingerprint + ''.join(map(str, one_hot)) + ''.join(map(str, mac_keys))
 
-    # Convert to ExplicitBitVect for RDKit compatibility
     combined_bitvect = ExplicitBitVect(len(combined))
     for i, bit in enumerate(combined):
         combined_bitvect.SetBit(i) if int(bit) else combined_bitvect.UnSetBit(i)
@@ -254,6 +234,5 @@ def correlate_predictions(test_data, training_data, model):
 
 
 def get_fingerprint(smiles_string):
-    """Generate Morgan fingerprint for a given SMILES string."""
     molecule = Chem.MolFromSmiles(smiles_string)
     return AllChem.GetMorganFingerprintAsBitVect(molecule, 2)
