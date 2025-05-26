@@ -12,9 +12,6 @@ class PyTorchMLPRegressor(BaseEstimator, RegressorMixin):
         self.lr = lr
         self.batch_size = batch_size
         self.verbose = verbose
-        print(f"CUDA disponível: {torch.cuda.is_available()}")
-        print(f"Quantidade de GPUs: {torch.cuda.device_count()}")
-        print(f"Nome da GPU: {torch.cuda.get_device_name(0)}")
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         print(f"Using device: {self.device}")
         self.model = self._build_model().to(self.device)
