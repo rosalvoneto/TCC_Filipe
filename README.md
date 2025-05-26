@@ -3,7 +3,8 @@ TCC Docking Molecular
 ## Ajustes do Ambiente 🛠️
 
 1. Instalação do Python 3.9.0 🐍
-2. Execute `pip install -r requirements.txt` para instalar dependências📦 
+2. Execute `pip install -r requirements.txt` para instalar dependências📦
+3. Digite no terminal src/models para ir para o diretório adequado. 
 
 ## Treinando usando LSTM 🧠
 
