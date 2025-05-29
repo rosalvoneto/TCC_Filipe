@@ -1,0 +1,17 @@
+venv/
+
+# Arquivos de log e temporários
+*.log
+__pycache__/
+models/_pycache/
+
+*.pyc
+*.xlsx
+*.json
+*.txt
+*.pdf
+*.docx
+*.doc
+*.xls
+*.xlsx
+results/*
